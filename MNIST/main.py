@@ -68,7 +68,7 @@ def test(evaluate=False):
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 
     bin_op.restore()
-    
+
     acc = 100. * correct / len(test_loader.dataset)
     if (acc > best_acc):
         best_acc = acc
@@ -123,27 +123,27 @@ if __name__=='__main__':
     args.cuda = not args.no_cuda and torch.cuda.is_available()
 
     print(args)
-    
+
     torch.manual_seed(args.seed)
     if args.cuda:
         torch.cuda.manual_seed(args.seed)
-    
+
     # load data
     kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
     train_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('data', train=True, download=True,
+            datasets.MNIST('{}/{}'.format(os.environ['VISION_DATA'], 'mnist'), train=True, download=False,
                 transform=transforms.Compose([
                     transforms.ToTensor(),
                     transforms.Normalize((0.1307,), (0.3081,))
                     ])),
                 batch_size=args.batch_size, shuffle=True, **kwargs)
     test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('data', train=False, transform=transforms.Compose([
+            datasets.MNIST('{}/{}'.format(os.environ['VISION_DATA'], 'mnist'), train=False, transform=transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize((0.1307,), (0.3081,))
                 ])),
             batch_size=args.test_batch_size, shuffle=True, **kwargs)
-    
+
     # generate the model
     if args.arch == 'LeNet_5':
         model = models.LeNet_5()
@@ -160,18 +160,18 @@ if __name__=='__main__':
 
     if args.cuda:
         model.cuda()
-    
+
     print(model)
     param_dict = dict(model.named_parameters())
     params = []
-    
+
     base_lr = 0.1
-    
+
     for key, value in param_dict.items():
         params += [{'params':[value], 'lr': args.lr,
             'weight_decay': args.weight_decay,
             'key':key}]
-    
+
     optimizer = optim.Adam(params, lr=args.lr,
             weight_decay=args.weight_decay)
 
