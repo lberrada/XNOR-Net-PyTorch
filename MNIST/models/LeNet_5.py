@@ -39,13 +39,13 @@ class BinConv2d(nn.Module): # change the name of BinConv2d
         if not self.Linear:
             self.bn = nn.BatchNorm2d(input_channels, eps=1e-4, momentum=0.1, affine=True)
             self.conv = nn.Conv2d(input_channels, output_channels,
-                    kernel_size=kernel_size, stride=stride, padding=padding, groups=groups)
+                    kernel_size=kernel_size, stride=stride, padding=padding, groups=groups, bias=False)
         else:
             if self.previous_conv:
                 self.bn = nn.BatchNorm2d(int(input_channels/size), eps=1e-4, momentum=0.1, affine=True)
             else:
                 self.bn = nn.BatchNorm1d(input_channels, eps=1e-4, momentum=0.1, affine=True)
-            self.linear = nn.Linear(input_channels, output_channels)
+            self.linear = nn.Linear(input_channels, output_channels, bias=False)
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
