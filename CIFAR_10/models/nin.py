@@ -34,9 +34,9 @@ class BinConv2d(nn.Module):
         if dropout!=0:
             self.dropout = nn.Dropout(dropout)
         self.conv = nn.Conv2d(input_channels, output_channels,
-                kernel_size=kernel_size, stride=stride, padding=padding)
+                kernel_size=kernel_size, stride=stride, padding=padding, bias=False)
         self.relu = nn.ReLU(inplace=True)
-    
+
     def forward(self, x):
         x = self.bn(x)
         x, mean = BinActive()(x)
@@ -57,12 +57,14 @@ class Net(nn.Module):
                 BinConv2d(160,  96, kernel_size=1, stride=1, padding=0),
                 nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
-                BinConv2d( 96, 192, kernel_size=5, stride=1, padding=2, dropout=0.5),
+                # BinConv2d( 96, 192, kernel_size=5, stride=1, padding=2, dropout=0.5),
+                BinConv2d( 96, 192, kernel_size=5, stride=1, padding=2, dropout=0.),
                 BinConv2d(192, 192, kernel_size=1, stride=1, padding=0),
                 BinConv2d(192, 192, kernel_size=1, stride=1, padding=0),
                 nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
 
-                BinConv2d(192, 192, kernel_size=3, stride=1, padding=1, dropout=0.5),
+                # BinConv2d(192, 192, kernel_size=3, stride=1, padding=1, dropout=0.5),
+                BinConv2d(192, 192, kernel_size=3, stride=1, padding=1, dropout=0.),
                 BinConv2d(192, 192, kernel_size=1, stride=1, padding=0),
                 nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
                 nn.Conv2d(192,  10, kernel_size=1, stride=1, padding=0),
